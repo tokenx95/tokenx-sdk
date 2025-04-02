@@ -98,6 +98,30 @@ const result = await tokenx.request('post', '/some/endpoint', {
 });
 ```
 
+### 使用模块化API
+
+TokenX SDK现在采用模块化设计，各功能按照领域进行组织:
+
+```javascript
+const Tokenx = require('tokenx-sdk').default;
+
+const tokenx = new Tokenx({
+    clientKey: 'your_client_key',
+    clientSecret: 'your_client_secret'
+});
+
+// 使用用户模块
+const userData = await tokenx.user.getUserData();
+
+// 使用网络模块
+const networks = await tokenx.network.getNetworks();
+const depositTokens = await tokenx.network.getDepositTokens();
+const usdcNetworks = await tokenx.network.getDepositNetworksBySymbol('USDC');
+
+// 使用核心模块
+const signature = tokenx.core.createSignature();
+```
+
 ## 许可证
 
 MIT

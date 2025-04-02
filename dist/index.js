@@ -1,10 +1,23 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTimestamp = exports.generateRequestId = exports.generateSignature = exports.TokenX = void 0;
-const axios_1 = __importDefault(require("axios"));
+const core_1 = require("./modules/core");
+const user_1 = require("./modules/user");
+const network_1 = require("./modules/network");
 const signature_1 = require("./auth/signature");
 Object.defineProperty(exports, "generateSignature", { enumerable: true, get: function () { return signature_1.generateSignature; } });
 Object.defineProperty(exports, "generateRequestId", { enumerable: true, get: function () { return signature_1.generateRequestId; } });
@@ -15,98 +28,34 @@ Object.defineProperty(exports, "getTimestamp", { enumerable: true, get: function
 class TokenX {
     /**
      * 创建TokenX SDK实例
-     * @param config SDK配置信息
      */
     constructor(config) {
-        if (!config.clientKey || !config.clientSecret) {
-            throw new Error('clientKey and clientSecret are required');
-        }
-        this.clientKey = config.clientKey;
-        this.clientSecret = config.clientSecret;
-        this.baseUrl = config.baseUrl || 'https://api.tokenex.pro/api';
-        // 初始化HTTP客户端
-        this.httpClient = axios_1.default.create({
-            baseURL: this.baseUrl,
-            timeout: 10000,
-        });
+        this.core = new core_1.CoreModule(config);
+        this.user = new user_1.UserModule(config);
+        this.network = new network_1.NetworkModule(config);
     }
     /**
-     * 生成API请求所需的签名
-     * @returns 包含签名、请求ID和时间戳的对象
+     * 为了向后兼容保留的方法
      */
     createSignature() {
-        const requestId = (0, signature_1.generateRequestId)();
-        const timestamp = (0, signature_1.getTimestamp)();
-        const signature = (0, signature_1.generateSignature)(this.clientKey, this.clientSecret, requestId, timestamp);
-        return {
-            signature,
-            requestId,
-            timestamp
-        };
+        return this.core.createSignature();
     }
     /**
-     * 获取用户数据
-     * @returns 用户数据
+     * 为了向后兼容保留的方法
      */
     async getUserData() {
-        const auth = this.createSignature();
-        const headers = {
-            'x-signature': auth.signature,
-            'x-timestamp': auth.timestamp.toString(),
-            'x-request-id': auth.requestId,
-            'x-client-key': this.clientKey
-        };
-        try {
-            const response = await this.httpClient.get('/user/overview', { headers });
-            return response.data.data;
-        }
-        catch (error) {
-            if (axios_1.default.isAxiosError(error) && error.response) {
-                throw new Error(`获取用户数据失败: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-            }
-            throw new Error(`获取用户数据失败: ${error}`);
-        }
+        return this.user.getUserData();
     }
     /**
-     * 发送带有签名的HTTP请求
-     * @param method HTTP方法
-     * @param path API路径
-     * @param data 请求数据（对于GET请求会转换为查询参数）
-     * @returns API响应
+     * 为了向后兼容保留的方法
      */
     async request(method, path, data) {
-        const auth = this.createSignature();
-        const headers = {
-            'x-signature': auth.signature,
-            'x-timestamp': auth.timestamp.toString(),
-            'x-request-id': auth.requestId,
-            'x-client-key': this.clientKey
-        };
-        const config = {
-            method,
-            url: path,
-            headers
-        };
-        if (data) {
-            if (method === 'get') {
-                config.params = data;
-            }
-            else {
-                config.data = data;
-            }
-        }
-        try {
-            const response = await this.httpClient.request(config);
-            return response.data.data;
-        }
-        catch (error) {
-            if (axios_1.default.isAxiosError(error) && error.response) {
-                throw new Error(`请求失败 ${path}: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-            }
-            throw new Error(`请求失败 ${path}: ${error}`);
-        }
+        return this.core.request(method, path, data);
     }
 }
 exports.TokenX = TokenX;
-// 导出主类和相关工具函数
+// 导出主类和模块
 exports.default = TokenX;
+__exportStar(require("./modules/core"), exports);
+__exportStar(require("./modules/user"), exports);
+__exportStar(require("./modules/network"), exports);
