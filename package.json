@@ -1,0 +1,38 @@
+{
+  "name": "tokenx-sdk",
+  "version": "0.1.0",
+  "description": "SDK for TokenX API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "tokenx",
+    "sdk",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/uuid": "^9.0.8",
+    "typescript": "^4.9.5"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tokenx95/tokenx-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tokenx95/tokenx-sdk/issues"
+  },
+  "homepage": "https://github.com/tokenx95/tokenx-sdk#readme"
+}
