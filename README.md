@@ -33,6 +33,27 @@ console.log(signature);
 // }
 ```
 
+### 使用 CommonJS 导入
+
+```javascript
+const TokenX = require('tokenx-sdk').default;
+
+const tokenx = new TokenX({
+    clientKey: 'your_client_key',
+    clientSecret: 'your_client_secret'  
+});
+```
+
+### 使用 ES 模块导入
+
+```javascript
+import TokenX from 'tokenx-sdk';
+
+const tokenx = new TokenX({
+    clientKey: 'your_client_key',
+    clientSecret: 'your_client_secret'  
+});
+```
 
 ## 许可证
 
