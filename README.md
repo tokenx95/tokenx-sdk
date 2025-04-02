@@ -55,6 +55,49 @@ const tokenx = new TokenX({
 });
 ```
 
+### 获取用户数据
+
+```javascript
+// 使用CommonJS
+const TokenX = require('tokenx-sdk').default;
+
+// 或使用ES模块
+// import TokenX from 'tokenx-sdk';
+
+const tokenx = new TokenX({
+    clientKey: 'your_client_key',
+    clientSecret: 'your_client_secret'  
+});
+
+// 异步获取用户数据
+async function getUserInfo() {
+    try {
+        const userData = await tokenx.getUserData();
+        console.log('用户基本信息:', userData.basic);
+        console.log('钱包信息:', userData.wallet);
+    } catch (error) {
+        console.error('获取用户数据失败:', error);
+    }
+}
+
+getUserInfo();
+```
+
+### 自定义API请求
+
+SDK提供了通用的request方法，可以用来调用任何TokenX API:
+
+```javascript
+// GET请求示例
+const userInfo = await tokenx.request('get', '/user/overview');
+
+// POST请求示例
+const result = await tokenx.request('post', '/some/endpoint', {
+    param1: 'value1',
+    param2: 'value2'
+});
+```
+
 ## 许可证
 
 MIT
