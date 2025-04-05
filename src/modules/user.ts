@@ -77,6 +77,32 @@ export interface AllocateAddressResponse {
     totalEvmAddresses: string[];
 }
 
+// 回调URL设置请求参数接口
+export interface SetCallbackUrlsParams {
+    primaryUrl: string;      // 主回调URL（必需）
+    backupUrl1?: string;     // 备用回调URL 1（可选）
+    backupUrl2?: string;     // 备用回调URL 2（可选）
+}
+
+// 回调URL设置响应接口
+export interface CallbackUrlsResponse {
+    callbackUrl: {
+        primaryUrl: string;
+        backupUrl1: string;
+        backupUrl2: string;
+    }
+}
+
+// 回调密钥设置请求参数接口
+export interface SetCallbackKeyParams {
+    callbackKey: string;     // 回调密钥
+}
+
+// 回调密钥设置响应接口
+export interface CallbackKeyResponse {
+    callbackKey: string;     // 可能部分隐藏的回调密钥
+}
+
 export class UserModule extends CoreModule {
     /**
      * 获取用户信息
@@ -140,5 +166,35 @@ export class UserModule extends CoreModule {
     public async allocateAccountWalletAddressSimple(): Promise<string> {
         const result = await this.allocateAccountWalletAddress();
         return result.newEvmAddress;
+    }
+
+    /**
+     * 设置子钱包回调URL
+     * @param params 回调URL参数
+     * @returns 设置后的回调URL信息
+     */
+    public async setSubWalletCallbackUrls(params: SetCallbackUrlsParams): Promise<CallbackUrlsResponse> {
+        if (!params.primaryUrl) {
+            throw new Error('主回调URL (primaryUrl) 是必需的且不能为空');
+        }
+
+        const data: SetCallbackUrlsParams = {
+            primaryUrl: params.primaryUrl,
+            ...(params.backupUrl1 !== undefined && { backupUrl1: params.backupUrl1 }),
+            ...(params.backupUrl2 !== undefined && { backupUrl2: params.backupUrl2 })
+        };
+        return this.request<CallbackUrlsResponse>('post', '/user/sub-wallets/callback-url', data);
+    }
+
+    /**
+     * 设置子钱包回调密钥
+     * @param callbackKey 回调密钥
+     * @returns 设置后的回调密钥信息
+     */
+    public async setSubWalletCallbackKey(callbackKey: string): Promise<CallbackKeyResponse> {
+        if (!callbackKey) {
+            throw new Error('回调密钥 (callbackKey) 不能为空');
+        }
+        return this.request<CallbackKeyResponse>('post', '/user/sub-wallets/callback-key', { callbackKey });
     }
 } 
