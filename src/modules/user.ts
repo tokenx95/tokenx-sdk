@@ -103,6 +103,11 @@ export interface CallbackKeyResponse {
     callbackKey: string;     // 可能部分隐藏的回调密钥
 }
 
+// 分配子钱包地址响应接口
+export interface AllocateSubWalletResponse {
+    address: string[];
+}
+
 export class UserModule extends CoreModule {
     /**
      * 获取用户信息
@@ -196,5 +201,56 @@ export class UserModule extends CoreModule {
             throw new Error('回调密钥 (callbackKey) 不能为空');
         }
         return this.request<CallbackKeyResponse>('post', '/user/sub-wallets/callback-key', { callbackKey });
+    }
+
+    /**
+     * 免费分配子钱包地址
+     * @param number 免费分配的地址数量
+     * @returns 分配的地址列表
+     */
+    public async allocateFreeSubWallets(number: number): Promise<AllocateSubWalletResponse> {
+        if (!number || number <= 0) {
+            throw new Error('分配数量必须大于0');
+        }
+
+        return this.request<AllocateSubWalletResponse>('post', '/user/sub-wallets/allocate', {
+            number
+        });
+    }
+
+    /**
+     * 付费购买子钱包地址
+     * @param buyNumber 购买的地址数量
+     * @returns 分配的地址列表
+     */
+    public async purchaseSubWallets(buyNumber: number | string): Promise<AllocateSubWalletResponse> {
+        const numberToBuy = typeof buyNumber === 'string' ? parseInt(buyNumber, 10) : buyNumber;
+
+        if (isNaN(numberToBuy) || numberToBuy <= 0) {
+            throw new Error('购买数量必须大于0');
+        }
+
+        return this.request<AllocateSubWalletResponse>('post', '/user/sub-wallets/allocate', {
+            buy: 1,
+            buyNumber: buyNumber
+        });
+    }
+
+    /**
+     * 分配单个子钱包地址的便捷方法（免费）
+     * @returns 分配的单个地址
+     */
+    public async allocateSingleFreeSubWallet(): Promise<string> {
+        const result = await this.allocateFreeSubWallets(1);
+        return result.address[0];
+    }
+
+    /**
+     * 购买单个子钱包地址的便捷方法
+     * @returns 购买的单个地址
+     */
+    public async purchaseSingleSubWallet(): Promise<string> {
+        const result = await this.purchaseSubWallets(1);
+        return result.address[0];
     }
 } 
