@@ -108,6 +108,52 @@ export interface AllocateSubWalletResponse {
     address: string[];
 }
 
+// 充值记录查询参数接口
+export interface DepositRecordsQueryParams {
+    status?: 1 | 2;             // 充值状态: 1=充值中, 2=已完成
+    depositType?: 1 | 2;        // 充值类型: 1=账户充值, 2=子钱包充值
+    startTime?: string;         // 开始时间
+    endTime?: string;           // 结束时间
+    token?: string;             // 代币符号
+    address?: string;           // 地址或交易哈希
+    page?: number;              // 页码
+    pageSize?: number;          // 每页数量
+}
+
+// 充值记录项接口
+export interface DepositRecordItem {
+    depositType: number;
+    typeName: string;
+    chain: string;
+    sender: string;
+    receiver: string;
+    amount: string;
+    token: string;
+    blockNumber: number;
+    status: number;
+    statusText: string;
+    address: string;
+    txHash: string;
+    confirmations: number;
+    requiredConfirmations: number;
+    createdAt: string;
+    processedAt: string;
+}
+
+// 分页信息接口
+export interface PaginationInfo {
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+}
+
+// 充值记录响应接口
+export interface DepositRecordsResponse {
+    records: DepositRecordItem[];
+    pagination: PaginationInfo;
+}
+
 export class UserModule extends CoreModule {
     /**
      * 获取用户信息
@@ -252,5 +298,100 @@ export class UserModule extends CoreModule {
     public async purchaseSingleSubWallet(): Promise<string> {
         const result = await this.purchaseSubWallets(1);
         return result.address[0];
+    }
+
+    /**
+     * 获取充值记录
+     * @param params 查询参数
+     * @returns 充值记录及分页信息
+     */
+    public async getDepositRecords(params?: DepositRecordsQueryParams): Promise<DepositRecordsResponse> {
+        // 设置默认值
+        const queryParams: DepositRecordsQueryParams = {
+            page: params?.page || 1,
+            pageSize: params?.pageSize || 10,
+            ...params
+        };
+
+        return this.request<DepositRecordsResponse>('get', '/user/deposit-records', queryParams);
+    }
+
+    /**
+     * 根据充值类型查询充值记录
+     * @param depositType 充值类型: 1=账户充值, 2=子钱包充值
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 充值记录及分页信息
+     */
+    public async getDepositRecordsByType(
+        depositType: 1 | 2,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<DepositRecordsResponse> {
+        return this.getDepositRecords({
+            depositType,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 根据时间范围查询充值记录
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 充值记录及分页信息
+     */
+    public async getDepositRecordsByTimeRange(
+        startTime: string,
+        endTime: string,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<DepositRecordsResponse> {
+        return this.getDepositRecords({
+            startTime,
+            endTime,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 根据代币符号查询充值记录
+     * @param token 代币符号
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 充值记录及分页信息
+     */
+    public async getDepositRecordsByToken(
+        token: string,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<DepositRecordsResponse> {
+        return this.getDepositRecords({
+            token,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 根据地址或交易哈希查询充值记录
+     * @param addressOrHash 地址或交易哈希
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 充值记录及分页信息
+     */
+    public async getDepositRecordsByAddressOrHash(
+        addressOrHash: string,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<DepositRecordsResponse> {
+        return this.getDepositRecords({
+            address: addressOrHash,
+            page,
+            pageSize
+        });
     }
 } 
