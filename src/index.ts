@@ -2,6 +2,7 @@ import { TokenXConfig, CoreModule } from './modules/core';
 import { UserModule } from './modules/user';
 import { NetworkModule } from './modules/network';
 import { generateSignature, generateRequestId, getTimestamp } from './auth/signature';
+import { TokenXApiError } from './utils/http';
 
 /**
  * TokenX SDK主类
@@ -44,7 +45,7 @@ export class TokenX {
 
 // 导出主类和模块
 export default TokenX;
-export { generateSignature, generateRequestId, getTimestamp };
+export { generateSignature, generateRequestId, getTimestamp, TokenXApiError };
 export * from './modules/core';
 export * from './modules/user';
 export * from './modules/network'; 

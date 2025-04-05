@@ -1,6 +1,17 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SignatureResult } from '../modules/core';
 
+// 添加自定义错误类
+export class TokenXApiError extends Error {
+    code: number;
+
+    constructor(code: number, message: string) {
+        super(message);
+        this.code = code;
+        this.name = 'TokenXApiError';
+    }
+}
+
 export interface ApiResponse<T = any> {
     code: number;
     message: string;
@@ -15,6 +26,18 @@ export class HttpClient {
             baseURL: baseUrl,
             timeout: 10000,
         });
+    }
+
+    /**
+     * 检查API响应状态并处理错误
+     */
+    private checkResponse<T>(response: ApiResponse<T>): T {
+        // 检查API返回的状态码
+        if (response.code !== 200) {
+            throw new TokenXApiError(response.code, response.message);
+        }
+
+        return response.data;
     }
 
     /**
@@ -50,12 +73,19 @@ export class HttpClient {
 
         try {
             const response = await this.client.request<ApiResponse<T>>(config);
-            return response.data.data;
+            // 添加检查API响应状态码
+            return this.checkResponse(response.data);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
-                throw new Error(`请求失败 ${path}: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+                // 处理HTTP错误
+                const apiResponse = error.response.data as ApiResponse<any>;
+                if (apiResponse && typeof apiResponse.code === 'number') {
+                    throw new TokenXApiError(apiResponse.code, apiResponse.message || '请求失败');
+                }
+                throw new TokenXApiError(error.response.status, `请求失败: ${JSON.stringify(error.response.data)}`);
             }
-            throw new Error(`请求失败 ${path}: ${error}`);
+            // 处理网络错误或其他错误
+            throw new TokenXApiError(500, `请求失败: ${error}`);
         }
     }
 
@@ -82,12 +112,19 @@ export class HttpClient {
 
         try {
             const response = await this.client.request<ApiResponse<T>>(config);
-            return response.data.data;
+            // 添加检查API响应状态码
+            return this.checkResponse(response.data);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
-                throw new Error(`请求失败 ${path}: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+                // 处理HTTP错误
+                const apiResponse = error.response.data as ApiResponse<any>;
+                if (apiResponse && typeof apiResponse.code === 'number') {
+                    throw new TokenXApiError(apiResponse.code, apiResponse.message || '请求失败');
+                }
+                throw new TokenXApiError(error.response.status, `请求失败: ${JSON.stringify(error.response.data)}`);
             }
-            throw new Error(`请求失败 ${path}: ${error}`);
+            // 处理网络错误或其他错误
+            throw new TokenXApiError(500, `请求失败: ${error}`);
         }
     }
 } 

@@ -126,19 +126,19 @@ export class UserModule extends CoreModule {
     }
 
     /**
-     * 分配新的钱包地址
+     * 分配新的账户钱包地址
      * @returns 分配结果，包含新地址和所有地址列表
      */
-    public async allocateWalletAddress(): Promise<AllocateAddressResponse> {
+    public async allocateAccountWalletAddress(): Promise<AllocateAddressResponse> {
         return this.request<AllocateAddressResponse>('post', '/user/wallet/allocate-address');
     }
 
     /**
-     * 分配新的钱包地址并只返回新地址
+     * 分配新的账户钱包地址并只返回新地址
      * @returns 仅返回新分配的钱包地址
      */
-    public async allocateWalletAddressSimple(): Promise<string> {
-        const result = await this.allocateWalletAddress();
+    public async allocateAccountWalletAddressSimple(): Promise<string> {
+        const result = await this.allocateAccountWalletAddress();
         return result.newEvmAddress;
     }
 } 

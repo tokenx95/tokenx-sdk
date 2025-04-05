@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTimestamp = exports.generateRequestId = exports.generateSignature = exports.TokenX = void 0;
+exports.TokenXApiError = exports.getTimestamp = exports.generateRequestId = exports.generateSignature = exports.TokenX = void 0;
 const core_1 = require("./modules/core");
 const user_1 = require("./modules/user");
 const network_1 = require("./modules/network");
@@ -22,6 +22,8 @@ const signature_1 = require("./auth/signature");
 Object.defineProperty(exports, "generateSignature", { enumerable: true, get: function () { return signature_1.generateSignature; } });
 Object.defineProperty(exports, "generateRequestId", { enumerable: true, get: function () { return signature_1.generateRequestId; } });
 Object.defineProperty(exports, "getTimestamp", { enumerable: true, get: function () { return signature_1.getTimestamp; } });
+const http_1 = require("./utils/http");
+Object.defineProperty(exports, "TokenXApiError", { enumerable: true, get: function () { return http_1.TokenXApiError; } });
 /**
  * TokenX SDK主类
  */
