@@ -71,6 +71,12 @@ export interface SubWalletsResponse {
     subWallets: SubWalletInfo[];
 }
 
+// 添加钱包地址分配响应接口
+export interface AllocateAddressResponse {
+    newEvmAddress: string;
+    totalEvmAddresses: string[];
+}
+
 export class UserModule extends CoreModule {
     /**
      * 获取用户信息
@@ -119,7 +125,20 @@ export class UserModule extends CoreModule {
         return addresses;
     }
 
-    // 未来可以添加更多用户相关方法
-    // public async updateUserProfile(data: UpdateProfileParams): Promise<UserData> {...}
-    // public async changePassword(data: ChangePasswordParams): Promise<void> {...}
+    /**
+     * 分配新的钱包地址
+     * @returns 分配结果，包含新地址和所有地址列表
+     */
+    public async allocateWalletAddress(): Promise<AllocateAddressResponse> {
+        return this.request<AllocateAddressResponse>('post', '/user/wallet/allocate-address');
+    }
+
+    /**
+     * 分配新的钱包地址并只返回新地址
+     * @returns 仅返回新分配的钱包地址
+     */
+    public async allocateWalletAddressSimple(): Promise<string> {
+        const result = await this.allocateWalletAddress();
+        return result.newEvmAddress;
+    }
 } 
