@@ -2,6 +2,10 @@
 
 用于与TokenX API进行交互的JavaScript/TypeScript SDK。
 
+## TokenX 官方网站
+
+访问 [TokenX 官方网站](https://tokenex.pro) 获取更多信息。
+
 ## 安装
 ```bash
 npm install tokenx-sdk
