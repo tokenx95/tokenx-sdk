@@ -146,6 +146,7 @@ async function getDepositNetworksBySymbolFunction() {
     }
 }
 
+// 获取充值（存款）记录
 async function getDepositRecordsFunction() {
     try {
         const records = await tokenx.user.getDepositRecords();
@@ -155,6 +156,7 @@ async function getDepositRecordsFunction() {
     }
 }
 
+// 获取指定类型的充值记录
 async function getDepositRecordsByTypeFunction() {
     try {
         const records = await tokenx.user.getDepositRecordsByType(1);
@@ -164,6 +166,7 @@ async function getDepositRecordsByTypeFunction() {
     }
 }
 
+// 获取指定代币的充值记录
 async function getDepositRecordsByTokenFunction() {
     try {
         const records = await tokenx.user.getDepositRecordsByToken('ETH');
@@ -173,6 +176,7 @@ async function getDepositRecordsByTokenFunction() {
     }
 }
 
+// 获取指定时间范围的充值记录
 async function getDepositRecordsByTimeRangeFunction() {
     try {
         const records = await tokenx.user.getDepositRecordsByTimeRange('2025-03-24T16:00:00.000Z', '2025-03-26T16:00:00.000Z');
@@ -182,6 +186,7 @@ async function getDepositRecordsByTimeRangeFunction() {
     }
 }
 
+// 获取指定地址或哈希的充值记录
 async function getDepositRecordsByAddressOrHashFunction() {
     try {
         const records = await tokenx.user.getDepositRecordsByAddressOrHash('0xa550ae44a07cbec5a965011e3efa33f688012fa6d81aff5c0edabfe7233a15ea');
@@ -190,6 +195,58 @@ async function getDepositRecordsByAddressOrHashFunction() {
         console.error('获取地址或哈希存款记录失败:', error);
     }
 }
+
+// 获取提现记录
+async function getWithdrawalRecordsFunction() {
+    try {
+        const records = await tokenx.user.getWithdrawalRecords();
+        console.log('提现记录:', records);
+    } catch (error) {
+        console.error('获取提现记录失败:', error);
+    }
+}
+
+// 获取指定类型的提现记录
+async function getWithdrawalRecordsByTypeFunction() {
+    try {
+        const records = await tokenx.user.getWithdrawalRecordsByType(1);
+        console.log('账户提现记录:', records);
+    } catch (error) {
+        console.error('获取账户提现记录失败:', error);
+    }
+}
+
+// 获取指定代币的提现记录
+async function getWithdrawalRecordsByTokenFunction() {
+    try {
+        const records = await tokenx.user.getWithdrawalRecordsByToken('ETH');
+        console.log('USDC提现记录:', records);
+    } catch (error) {
+        console.error('获取USDC提现记录失败:', error);
+    }
+}
+
+// 获取指定地址或哈希的提现记录
+async function getWithdrawalRecordsByAddressOrHashFunction() {
+    try {
+        const records = await tokenx.user.getWithdrawalRecordsByAddressOrHash('0x9051db1e531b36f196f63649d5e204261f080558d68ecdb83accd9b7e286203f');
+        console.log('地址或哈希提现记录:', records);
+    } catch (error) {
+        console.error('获取地址或哈希提现记录失败:', error);
+    }
+}
+
+// 获取指定时间范围的提现记录
+async function getWithdrawalRecordsByTimeRangeFunction() {
+    try {
+        const records = await tokenx.user.getWithdrawalRecordsByTimeRange('2025-04-17T15:07:37.003Z', '2025-04-17T16:07:37.003Z');
+        console.log('时间范围提现记录:', records);
+    } catch (error) {
+        console.error('获取时间范围提现记录失败:', error);
+    }
+}
+
+
 
 // 运行示例
 async function runExample() {

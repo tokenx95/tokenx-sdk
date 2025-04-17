@@ -136,6 +136,7 @@ export interface DepositRecordItem {
     txHash: string;
     confirmations: number;
     requiredConfirmations: number;
+    txLink: string;
     createdAt: string;
     processedAt: string;
 }
@@ -152,6 +153,79 @@ export interface PaginationInfo {
 export interface DepositRecordsResponse {
     records: DepositRecordItem[];
     pagination: PaginationInfo;
+}
+
+// 更新提现记录查询参数接口
+export interface WithdrawalRecordsQueryParams {
+    withdrawType?: 1 | 2;      // 提现类型: 1=账户钱包, 2=子钱包
+    status?: 0 | 1 | 2 | 3;     // 状态: 0=处理中, 1=已处理, 2=已拒绝, 3=大额待审核
+    tokenName?: string;         // 代币名称，如USDT
+    address?: string;           // 地址或交易哈希
+    startTime?: string;         // 开始时间
+    endTime?: string;           // 结束时间
+    page?: number;              // 页码
+    pageSize?: number;          // 每页数量
+}
+
+// 代币信息接口
+export interface WithdrawalTokenInfo {
+    name: string;
+    contractAddress: string;
+    decimals: number;
+    logo: string;
+}
+
+// 链信息接口
+export interface WithdrawalChainInfo {
+    name: string;
+    logo: string;
+    explorerUrl?: string;
+}
+
+// 交易信息接口
+export interface WithdrawalTransactionInfo {
+    hash: string;
+    blockNumber: number;
+    confirmations: number;
+}
+
+// 手续费信息接口
+export interface WithdrawalFeeInfo {
+    amount: string;
+    token: string;
+}
+
+// 提现记录项接口
+export interface WithdrawalRecordItem {
+    _id: string;
+    withdrawId: string;
+    userId: string;
+    type: number;
+    amount: string;
+    toAddress: string;
+    status: number;
+    statusText: string;
+    createdAt: string;
+    updatedAt: string;
+    txLink: string;
+    token: WithdrawalTokenInfo;
+    chain: WithdrawalChainInfo;
+    fee: WithdrawalFeeInfo;
+    transaction?: WithdrawalTransactionInfo;
+}
+
+// 提现分页信息接口
+export interface WithdrawalPaginationInfo {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+}
+
+// 提现记录响应接口
+export interface WithdrawalRecordsResponse {
+    withdrawals: WithdrawalRecordItem[];
+    pagination: WithdrawalPaginationInfo;
 }
 
 export class UserModule extends CoreModule {
@@ -390,6 +464,120 @@ export class UserModule extends CoreModule {
     ): Promise<DepositRecordsResponse> {
         return this.getDepositRecords({
             address: addressOrHash,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 获取提现记录
+     * @param params 查询参数
+     * @returns 提现记录及分页信息
+     */
+    public async getWithdrawalRecords(params?: WithdrawalRecordsQueryParams): Promise<WithdrawalRecordsResponse> {
+        // 设置默认值
+        const queryParams: WithdrawalRecordsQueryParams = {
+            page: params?.page || 1,
+            pageSize: params?.pageSize || 10,
+            ...params
+        };
+
+        return this.request<WithdrawalRecordsResponse>('get', '/user/withdrawal/records', queryParams);
+    }
+
+    /**
+     * 根据提现类型查询提现记录
+     * @param withdrawType 提现类型: 1=账户钱包, 2=子钱包
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 提现记录及分页信息
+     */
+    public async getWithdrawalRecordsByType(
+        withdrawType: 1 | 2,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<WithdrawalRecordsResponse> {
+        return this.getWithdrawalRecords({
+            withdrawType,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 根据状态查询提现记录
+     * @param status 状态: 0=处理中, 1=已处理, 2=已拒绝, 3=大额待审核
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 提现记录及分页信息
+     */
+    public async getWithdrawalRecordsByStatus(
+        status: 0 | 1 | 2 | 3,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<WithdrawalRecordsResponse> {
+        return this.getWithdrawalRecords({
+            status,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 根据代币名称查询提现记录
+     * @param tokenName 代币名称，如USDT
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 提现记录及分页信息
+     */
+    public async getWithdrawalRecordsByToken(
+        tokenName: string,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<WithdrawalRecordsResponse> {
+        return this.getWithdrawalRecords({
+            tokenName,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 根据地址或交易哈希查询提现记录
+     * @param addressOrHash 地址或交易哈希
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 提现记录及分页信息
+     */
+    public async getWithdrawalRecordsByAddressOrHash(
+        addressOrHash: string,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<WithdrawalRecordsResponse> {
+        return this.getWithdrawalRecords({
+            address: addressOrHash,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * 根据时间范围查询提现记录
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @returns 提现记录及分页信息
+     */
+    public async getWithdrawalRecordsByTimeRange(
+        startTime: string,
+        endTime: string,
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<WithdrawalRecordsResponse> {
+        return this.getWithdrawalRecords({
+            startTime,
+            endTime,
             page,
             pageSize
         });
